@@ -1,0 +1,29 @@
+# Composer
+/vendor/
+composer.lock
+
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Configuration (sensitive data)
+/config/config.php
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+error_log
+
+# Temporary files
+*.tmp
+*.swp
+*~

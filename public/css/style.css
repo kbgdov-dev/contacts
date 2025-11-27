@@ -1,0 +1,164 @@
+/* Custom Styles for Contact Management System */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card styles */
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+/* Table styles */
+.table-actions {
+    white-space: nowrap;
+}
+
+.table-actions .btn {
+    margin-right: 5px;
+}
+
+/* Badge styles */
+.badge {
+    font-size: 0.875rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Form styles */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Loading spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Pagination */
+.pagination {
+    margin-bottom: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Status badges */
+.status-active {
+    background-color: var(--success-color);
+}
+
+.status-inactive {
+    background-color: var(--secondary-color);
+}
+
+.status-unsubscribed {
+    background-color: var(--danger-color);
+}
+
+.status-draft {
+    background-color: var(--secondary-color);
+}
+
+.status-scheduled {
+    background-color: var(--info-color);
+}
+
+.status-sending {
+    background-color: var(--warning-color);
+}
+
+.status-sent {
+    background-color: var(--success-color);
+}
+
+.status-cancelled {
+    background-color: var(--danger-color);
+}
+
+/* Campaign statistics */
+.campaign-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.campaign-stat-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.campaign-stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.campaign-stat-label {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+}

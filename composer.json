@@ -1,0 +1,22 @@
+{
+    "name": "contact-management-system",
+    "description": "Contact Management and Email Campaign System",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Contact System",
+            "email": "admin@example.com"
+        }
+    ]
+}
