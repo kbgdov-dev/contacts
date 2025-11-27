@@ -6,15 +6,25 @@
 require_once SRC_PATH . '/models/Campaign.php';
 require_once SRC_PATH . '/models/Contact.php';
 
+// Подключить сервисы
+require_once SRC_PATH . '/../vendor/autoload.php';
+
+use App\Services\QueueService;
+use App\Services\EmailService;
+
 class CampaignController
 {
     private $campaignModel;
     private $contactModel;
+    private $queueService;
+    private $emailService;
 
     public function __construct()
     {
         $this->campaignModel = new Campaign();
         $this->contactModel = new Contact();
+        $this->queueService = new QueueService();
+        $this->emailService = new EmailService();
     }
 
     /**
@@ -222,18 +232,181 @@ class CampaignController
             redirect('/public/index.php?page=campaign-edit&id=' . $id);
         }
 
-        // NOTE: This is a simplified version. In production, you would:
-        // 1. Use a queue system (e.g., Redis, RabbitMQ)
-        // 2. Send emails in background using a worker
-        // 3. Implement rate limiting to avoid being blacklisted
-        //
-        // For now, we'll just mark it as sent
+        // Подготовить получателей для очереди
+        $recipientsData = [];
+        foreach ($recipients as $recipient) {
+            // Получить полные данные контакта
+            $contact = $this->contactModel->findById($recipient['contact_id'], $userId);
+            if ($contact && $contact['status'] !== 'unsubscribed') {
+                $recipientsData[] = $contact;
+            }
+        }
 
-        $stmt = $this->campaignModel->update($id, array_merge($campaign, ['status' => 'sent']), $userId);
+        if (empty($recipientsData)) {
+            setFlashMessage('error', 'No active recipients found.');
+            redirect('/public/index.php?page=campaign-edit&id=' . $id);
+        }
 
-        logActivity('campaign_sent', 'campaign', $id, 'Sent campaign: ' . $campaign['name']);
-        setFlashMessage('success', 'Campaign queued for sending. Recipients: ' . count($recipients));
-        redirect('/public/index.php?page=campaign-view&id=' . $id);
+        try {
+            // Добавить всех получателей в очередь
+            $added = $this->queueService->addBulk(
+                $recipientsData,
+                $campaign['subject'],
+                $campaign['body'],
+                $id,
+                !empty($campaign['scheduled_at']) ? new DateTime($campaign['scheduled_at']) : null
+            );
+
+            // Обновить статус кампании
+            $newStatus = !empty($campaign['scheduled_at']) ? 'scheduled' : 'sending';
+            $this->campaignModel->update($id, array_merge($campaign, ['status' => $newStatus]), $userId);
+
+            logActivity('campaign_sent', 'campaign', $id, 'Queued campaign: ' . $campaign['name']);
+            setFlashMessage('success', "Campaign queued successfully. {$added} emails added to queue.");
+            redirect('/public/index.php?page=campaign-view&id=' . $id);
+
+        } catch (Exception $e) {
+            error_log("Failed to queue campaign: " . $e->getMessage());
+            setFlashMessage('error', 'Failed to queue campaign for sending.');
+            redirect('/public/index.php?page=campaign-edit&id=' . $id);
+        }
+    }
+
+    /**
+     * Send test email
+     */
+    public function sendTest()
+    {
+        $userId = getCurrentUserId();
+        $id = intval($_POST['campaign_id'] ?? 0);
+        $testEmail = sanitize($_POST['test_email'] ?? '');
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'Invalid campaign ID']);
+            return;
+        }
+
+        if (empty($testEmail) || !isValidEmail($testEmail)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid email address']);
+            return;
+        }
+
+        $campaign = $this->campaignModel->findById($id, $userId);
+
+        if (!$campaign) {
+            echo json_encode(['success' => false, 'message' => 'Campaign not found']);
+            return;
+        }
+
+        try {
+            // Подготовить тестовые переменные
+            $variables = [
+                'first_name' => 'Тест',
+                'last_name' => 'Тестович',
+                'email' => $testEmail,
+                'company' => 'Тестовая Компания'
+            ];
+
+            // Отправить тестовое письмо
+            $result = $this->emailService->sendPersonalized(
+                $testEmail,
+                '[ТЕСТ] ' . $campaign['subject'],
+                $campaign['body'],
+                $variables
+            );
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Test email sent successfully to ' . $testEmail
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to send test email. Check SMTP settings.'
+                ]);
+            }
+
+        } catch (Exception $e) {
+            error_log("Failed to send test email: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get queue status for campaign
+     */
+    public function getQueueStatus()
+    {
+        $userId = getCurrentUserId();
+        $id = intval($_GET['campaign_id'] ?? 0);
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'Invalid campaign ID']);
+            return;
+        }
+
+        $campaign = $this->campaignModel->findById($id, $userId);
+
+        if (!$campaign) {
+            echo json_encode(['success' => false, 'message' => 'Campaign not found']);
+            return;
+        }
+
+        try {
+            $stats = $this->queueService->getCampaignStats($id);
+            echo json_encode([
+                'success' => true,
+                'stats' => $stats
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Cancel pending emails in queue
+     */
+    public function cancelQueue()
+    {
+        $userId = getCurrentUserId();
+        $id = intval($_POST['campaign_id'] ?? 0);
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'Invalid campaign ID']);
+            return;
+        }
+
+        $campaign = $this->campaignModel->findById($id, $userId);
+
+        if (!$campaign) {
+            echo json_encode(['success' => false, 'message' => 'Campaign not found']);
+            return;
+        }
+
+        try {
+            $cancelled = $this->queueService->cancel($id);
+
+            // Обновить статус кампании
+            $this->campaignModel->update($id, array_merge($campaign, ['status' => 'cancelled']), $userId);
+
+            echo json_encode([
+                'success' => true,
+                'message' => "Cancelled {$cancelled} pending emails",
+                'cancelled' => $cancelled
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
