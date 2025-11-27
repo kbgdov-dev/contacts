@@ -24,7 +24,10 @@
 - Система тегов
 - Статусы: active, inactive, unsubscribed
 
-### 📧 Email-рассылки
+### 📧 Email-рассылки (PHPMailer + SMTP)
+- **Профессиональная отправка через SMTP** (не попадают в спам)
+- Поддержка очереди отправки (queue system)
+- Rate limiting для защиты от блокировки SMTP
 - Создание и управление кампаниями
 - WYSIWYG редактор для писем
 - Персонализация (подстановка {first_name}, {last_name}, и т.д.)
@@ -36,7 +39,9 @@
   - Количество отправленных писем
   - Открытия (через pixel tracking)
   - Клики по ссылкам
+- Тестовая отправка перед запуском кампании
 - Страница отписки от рассылок
+- Автоматическая обработка очереди через cron
 
 ### 📊 Dashboard
 - Статистика контактов
@@ -99,26 +104,68 @@ mysql -u root -p contact_system < database/schema.sql
 
 ### 4. Конфигурация
 
-Отредактируйте файл `config/config.php`:
+Скопируйте `.env.example` в `.env` и отредактируйте:
 
-```php
-// Database configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'contact_system');
-define('DB_USER', 'root');
-define('DB_PASS', 'your_password');
+```bash
+cp .env.example .env
+nano .env
+```
 
-// Application URL
-define('APP_URL', 'http://localhost');
+Заполните настройки в `.env`:
 
-// Email settings (для PHPMailer)
-define('SMTP_HOST', 'smtp.example.com');
-define('SMTP_PORT', 587);
-define('SMTP_USERNAME', 'your-email@example.com');
-define('SMTP_PASSWORD', 'your-password');
-define('SMTP_ENCRYPTION', 'tls'); // tls или ssl
-define('MAIL_FROM_EMAIL', 'noreply@example.com');
-define('MAIL_FROM_NAME', 'Contact Management System');
+```env
+# База данных
+DB_HOST=localhost
+DB_NAME=contacts_db
+DB_USER=root
+DB_PASSWORD=your_password
+
+# Приложение
+APP_URL=http://localhost
+
+# SMTP настройки
+MAIL_DRIVER=smtp
+SMTP_HOST=smtp.yandex.ru
+SMTP_PORT=465
+SMTP_ENCRYPTION=ssl
+SMTP_USERNAME=your-email@yourdomain.ru
+SMTP_PASSWORD=your-app-password
+SMTP_FROM_EMAIL=noreply@yourdomain.ru
+SMTP_FROM_NAME="Your Company Name"
+```
+
+#### Настройка SMTP для разных провайдеров:
+
+**Яндекс 360 / Яндекс Почта для бизнеса:**
+```env
+SMTP_HOST=smtp.yandex.ru
+SMTP_PORT=465
+SMTP_ENCRYPTION=ssl
+SMTP_USERNAME=your-email@yourdomain.ru
+SMTP_PASSWORD=app-password  # Используйте пароль приложения!
+```
+
+**Mail.ru для бизнеса:**
+```env
+SMTP_HOST=smtp.mail.ru
+SMTP_PORT=465
+SMTP_ENCRYPTION=ssl
+```
+
+**Gmail (требует App Password):**
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+```
+
+**SendGrid:**
+```env
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USERNAME=apikey
+SMTP_PASSWORD=your-sendgrid-api-key
 ```
 
 ### 5. Настройка веб-сервера
@@ -168,13 +215,75 @@ server {
 }
 ```
 
-### 6. Права доступа
+### 6. Настройка Cron Job
+
+Для автоматической обработки очереди email добавьте в crontab:
+
+```bash
+crontab -e
+```
+
+Добавьте строку (запуск каждые 5 минут):
+
+```bash
+*/5 * * * * /usr/bin/php /path/to/contacts/cron/process-email-queue.php >> /var/log/email-queue.log 2>&1
+```
+
+Или создайте systemd timer (рекомендуется):
+
+```bash
+# /etc/systemd/system/email-queue.service
+[Unit]
+Description=Process Email Queue
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/php /path/to/contacts/cron/process-email-queue.php
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+# /etc/systemd/system/email-queue.timer
+[Unit]
+Description=Run email queue processor every 5 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target
+```
+
+Активация:
+
+```bash
+sudo systemctl enable email-queue.timer
+sudo systemctl start email-queue.timer
+sudo systemctl status email-queue.timer
+```
+
+### 7. Применение миграций БД
+
+Примените новые миграции для очереди email:
+
+```bash
+mysql -u root -p contacts_db < database/migrations/001_add_email_queue_and_logs.sql
+```
+
+### 8. Права доступа
 
 Установите правильные права на папки:
 
 ```bash
 chmod 755 -R .
 chmod 777 -R public/uploads
+chmod 777 -R logs
+chmod +x cron/process-email-queue.php
 ```
 
 ## Использование
@@ -235,21 +344,37 @@ Jane,Smith,jane@example.com,+0987654321,Tech Inc,Developer,partner,active
 ```
 /contacts
 ├── config/              # Конфигурационные файлы
-│   └── config.php
+│   └── mail.php         # Настройки SMTP и очереди
+├── cron/                # Cron jobs
+│   └── process-email-queue.php
 ├── database/            # SQL схемы и миграции
-│   └── schema.sql
+│   ├── schema.sql
+│   └── migrations/
+│       └── 001_add_email_queue_and_logs.sql
+├── docs/                # Документация
+├── logs/                # Логи приложения
+│   └── email.log
 ├── public/              # Публичная папка (Document Root)
 │   ├── css/
 │   ├── js/
 │   ├── uploads/
+│   ├── track.php        # Tracking pixel endpoint
+│   ├── click.php        # Link tracking endpoint
 │   ├── .htaccess
 │   └── index.php        # Точка входа
 ├── src/
 │   ├── controllers/     # Контроллеры
 │   ├── models/          # Модели
 │   ├── views/           # Представления
+│   ├── services/        # Бизнес-логика
+│   │   ├── EmailService.php      # Отправка email через PHPMailer
+│   │   ├── QueueService.php      # Управление очередью
+│   │   └── TrackingService.php   # Отслеживание открытий/кликов
 │   ├── Database.php     # Класс подключения к БД
 │   └── helpers.php      # Вспомогательные функции
+├── vendor/              # Composer зависимости
+├── .env                 # Конфигурация (не в git!)
+├── .env.example         # Пример конфигурации
 ├── composer.json
 └── README.md
 ```
@@ -316,9 +441,34 @@ composer update
 
 ### Не отправляются письма
 
-Проверьте настройки SMTP в `config/config.php`:
+Проверьте настройки SMTP в `.env`:
 - Правильность хоста, порта, логина и пароля
 - Firewall не блокирует исходящие соединения на порт 587/465
+- Используете ли вы **пароль приложения** (не основной пароль) для Яндекс/Gmail
+- Проверьте логи: `tail -f logs/email.log`
+
+#### Тестирование SMTP подключения:
+
+```bash
+# Запустите тестовую отправку
+php -r "
+require 'vendor/autoload.php';
+use App\Services\EmailService;
+\$service = new EmailService();
+\$result = \$service->testConnection();
+echo \$result['message'];
+"
+```
+
+### Очередь не обрабатывается
+
+Проверьте:
+- Запущен ли cron job: `sudo systemctl status email-queue.timer`
+- Логи cron: `tail -f /var/log/email-queue.log`
+- Статус очереди через БД:
+  ```sql
+  SELECT status, COUNT(*) FROM email_queue GROUP BY status;
+  ```
 
 ## Лицензия
 
@@ -329,6 +479,19 @@ MIT License
 Для вопросов и предложений создавайте Issue в репозитории.
 
 ## Changelog
+
+### v2.0.0 (2025-11-27)
+- 🎉 **Модернизация системы отправки email:**
+  - Интеграция PHPMailer 6.8 с SMTP
+  - Система очереди отправки (QueueService)
+  - Rate limiting для защиты от блокировки
+  - TrackingService для отслеживания открытий и кликов
+  - Тестовая отправка писем
+  - Cron job для автоматической обработки очереди
+  - Поддержка популярных SMTP провайдеров (Яндекс, Mail.ru, Gmail, SendGrid)
+- 📧 Конфигурация через .env файл
+- 📊 Расширенная статистика email-кампаний
+- 🔒 Улучшенная безопасность SMTP
 
 ### v1.0.0 (2025-11-27)
 - Первый релиз
@@ -341,8 +504,12 @@ MIT License
 
 ## TODO
 
-- [ ] Интеграция с внешними сервисами (Mailchimp, SendGrid)
-- [ ] Расширенная аналитика
+- [x] ~~Интеграция PHPMailer с SMTP~~
+- [x] ~~Система очереди email~~
+- [x] ~~Rate limiting~~
+- [x] ~~Tracking открытий и кликов~~
+- [ ] Admin UI для настройки SMTP
+- [ ] Расширенная аналитика (графики, heatmaps)
 - [ ] Двухфакторная аутентификация
 - [ ] REST API
 - [ ] WebSocket уведомления
@@ -351,6 +518,7 @@ MIT License
 - [ ] Автоматические рассылки по расписанию
 - [ ] A/B тестирование кампаний
 - [ ] Сегментация аудитории
+- [ ] Интеграция с Mailchimp API
 
 ## Благодарности
 

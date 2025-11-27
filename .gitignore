@@ -8,6 +8,7 @@ composer.lock
 
 # Configuration (sensitive data)
 /config/config.php
+.env
 
 # IDE
 .idea/
