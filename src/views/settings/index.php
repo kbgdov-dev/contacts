@@ -20,7 +20,7 @@ ob_start();
                         </div>
                         <div class="card-body">
                             <form method="POST" action="/index.php?page=settings-save">
-                                <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
+                                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                                 <div class="mb-3">
                                     <label for="smtp_host" class="form-label">SMTP Host <span class="text-danger">*</span></label>

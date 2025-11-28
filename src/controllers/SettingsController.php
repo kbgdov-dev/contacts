@@ -49,7 +49,7 @@ class SettingsController
         }
 
         // Validate CSRF token
-        if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
             setFlashMessage('Invalid security token', 'error');
             redirect('/index.php?page=settings');
             return;
