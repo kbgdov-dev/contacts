@@ -124,9 +124,10 @@ COMMENT='Отслеживание кликов по ссылкам в email';
 -- Обновление таблицы campaign_recipients
 -- Добавление полей для отслеживания
 -- ============================================
-ALTER TABLE `campaign_recipients`
-ADD COLUMN IF NOT EXISTS `opened_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Количество открытий' AFTER `tracking_token`,
-ADD COLUMN IF NOT EXISTS `clicked_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Количество кликов' AFTER `opened_count`;
+-- Note: Run these ALTER commands only if columns don't exist
+-- ALTER TABLE `campaign_recipients`
+-- ADD COLUMN `opened_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Количество открытий' AFTER `tracking_token`,
+-- ADD COLUMN `clicked_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Количество кликов' AFTER `opened_count`;
 
 -- ============================================
 -- Таблица: rate_limit
