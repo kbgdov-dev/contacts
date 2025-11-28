@@ -18,7 +18,7 @@ class Database
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
 
-            $this->connection = new PDO($dsn, DB_USER, DB_PASS, $options);
+            $this->connection = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }
