@@ -156,6 +156,21 @@ switch ($page) {
         $controller->unsubscribe();
         break;
 
+    // Settings
+    case 'settings':
+        requireAuth();
+        require_once SRC_PATH . '/controllers/SettingsController.php';
+        $controller = new SettingsController();
+        $controller->index();
+        break;
+
+    case 'settings-save':
+        requireAuth();
+        require_once SRC_PATH . '/controllers/SettingsController.php';
+        $controller = new SettingsController();
+        $controller->save();
+        break;
+
     // 404
     default:
         http_response_code(404);

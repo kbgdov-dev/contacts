@@ -43,6 +43,10 @@
                             <i class="bi bi-person-circle"></i> <?= $_SESSION['user_name'] ?? 'User' ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/index.php?page=settings">
+                                <i class="bi bi-gear-fill"></i> Settings
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/index.php?page=logout">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a></li>
