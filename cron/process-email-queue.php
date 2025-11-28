@@ -5,7 +5,7 @@
  *
  * Обрабатывает очередь отправки email
  * Запускать каждые 5 минут через crontab:
- * */5 * * * * /usr/bin/php /path/to/project/cron/process-email-queue.php >> /var/log/email-queue.log 2>&1
+ * (star)/5 * * * * /usr/bin/php /path/to/project/cron/process-email-queue.php >> /var/log/email-queue.log 2>&1
  *
  * @package App\Cron
  */

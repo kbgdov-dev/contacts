@@ -399,6 +399,7 @@ class QueueService
     private function getNextBatch(int $limit): array
     {
         $maxAttempts = $this->config['queue']['max_attempts'];
+        $limit = (int)$limit; // Ensure integer
 
         // Заблокировать записи для обработки
         $stmt = $this->db->prepare("
@@ -408,10 +409,10 @@ class QueueService
             AND scheduled_at <= NOW()
             AND attempts < ?
             ORDER BY priority DESC, scheduled_at ASC
-            LIMIT ?
+            LIMIT " . $limit . "
         ");
 
-        $stmt->execute([$maxAttempts, $limit]);
+        $stmt->execute([$maxAttempts]);
 
         // Получить заблокированные записи
         $stmt = $this->db->prepare("
@@ -419,10 +420,10 @@ class QueueService
             FROM email_queue
             WHERE status = 'processing'
             ORDER BY priority DESC, scheduled_at ASC
-            LIMIT ?
+            LIMIT " . $limit . "
         ");
 
-        $stmt->execute([$limit]);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }
