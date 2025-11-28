@@ -358,7 +358,7 @@ class EmailService
         try {
             // Попытка использовать существующее подключение
             if (class_exists('Database')) {
-                $dbClass = new \Database();
+                $dbClass = \Database::getInstance();
                 $this->db = $dbClass->getConnection();
             } else {
                 // Создать новое подключение

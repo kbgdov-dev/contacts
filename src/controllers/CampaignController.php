@@ -5,6 +5,7 @@
 
 require_once SRC_PATH . '/models/Campaign.php';
 require_once SRC_PATH . '/models/Contact.php';
+require_once SRC_PATH . '/models/User.php';
 
 // Подключить сервисы
 require_once SRC_PATH . '/../vendor/autoload.php';
