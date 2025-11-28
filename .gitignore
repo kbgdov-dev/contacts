@@ -7,7 +7,6 @@ composer.lock
 !/public/uploads/.gitkeep
 
 # Configuration (sensitive data)
-/config/config.php
 .env
 
 # IDE

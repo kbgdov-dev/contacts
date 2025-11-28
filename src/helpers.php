@@ -181,7 +181,7 @@ function getPagination($totalItems, $currentPage = 1, $itemsPerPage = DEFAULT_IT
 function requireAuth()
 {
     if (!isLoggedIn()) {
-        redirect('/public/index.php?page=login');
+        redirect('/index.php?page=login');
     }
 }
 
@@ -193,6 +193,6 @@ function requireAdmin()
     requireAuth();
     if (!isAdmin()) {
         setFlashMessage('error', 'Access denied. Admin privileges required.');
-        redirect('/public/index.php?page=dashboard');
+        redirect('/index.php?page=dashboard');
     }
 }

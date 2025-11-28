@@ -6,14 +6,14 @@
     <title><?= $pageTitle ?? APP_NAME ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/public/css/style.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
     <?php if (isLoggedIn()): ?>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/public/index.php?page=dashboard">
+            <a class="navbar-brand" href="/index.php?page=dashboard">
                 <i class="bi bi-people-fill"></i> <?= APP_NAME ?>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -22,17 +22,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/public/index.php?page=dashboard">
+                        <a class="nav-link" href="/index.php?page=dashboard">
                             <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/public/index.php?page=contacts">
+                        <a class="nav-link" href="/index.php?page=contacts">
                             <i class="bi bi-person-lines-fill"></i> Contacts
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/public/index.php?page=campaigns">
+                        <a class="nav-link" href="/index.php?page=campaigns">
                             <i class="bi bi-envelope-fill"></i> Campaigns
                         </a>
                     </li>
@@ -43,7 +43,7 @@
                             <i class="bi bi-person-circle"></i> <?= $_SESSION['user_name'] ?? 'User' ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/public/index.php?page=logout">
+                            <li><a class="dropdown-item" href="/index.php?page=logout">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a></li>
                         </ul>
@@ -87,6 +87,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/public/js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

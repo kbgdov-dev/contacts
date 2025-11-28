@@ -167,7 +167,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ============================================
 -- Insert default admin user
 -- Password: admin123 (hashed with PASSWORD_DEFAULT)
+-- Use the following command to reset password after importing:
+-- UPDATE users SET password = '$2y$12$ERRXw4KWGqZPnfE1KwqdX..3PwXlhWvmh0iperNu0hccGiTNEz9t2' WHERE email = 'admin@example.com';
 -- ============================================
 INSERT INTO `users` (`email`, `password`, `first_name`, `last_name`, `role`, `status`)
-VALUES ('admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'User', 'admin', 'active')
+VALUES ('admin@example.com', '$2y$12$ERRXw4KWGqZPnfE1KwqdX..3PwXlhWvmh0iperNu0hccGiTNEz9t2', 'Admin', 'User', 'admin', 'active')
 ON DUPLICATE KEY UPDATE `email` = `email`;

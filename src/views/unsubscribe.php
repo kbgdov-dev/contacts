@@ -35,7 +35,7 @@
                                 <strong><?= htmlspecialchars($contact['first_name'] . ' ' . $contact['last_name']) ?></strong><br>
                                 <?= htmlspecialchars($contact['email']) ?>
                             </div>
-                            <form method="POST" action="/public/index.php?page=unsubscribe&token=<?= htmlspecialchars($token) ?>">
+                            <form method="POST" action="/index.php?page=unsubscribe&token=<?= htmlspecialchars($token) ?>">
                                 <button type="submit" class="btn btn-danger btn-lg">
                                     <i class="bi bi-x-circle"></i> Yes, Unsubscribe Me
                                 </button>

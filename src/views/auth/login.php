@@ -12,7 +12,7 @@ ob_start();
                         <i class="bi bi-person-circle"></i> Login
                     </h2>
 
-                    <form method="POST" action="/public/index.php?page=login">
+                    <form method="POST" action="/index.php?page=login">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="mb-3">
@@ -26,7 +26,7 @@ ob_start();
                         </div>
 
                         <div class="mb-3">
-                            <a href="/public/index.php?page=forgot-password" class="text-decoration-none">
+                            <a href="/index.php?page=forgot-password" class="text-decoration-none">
                                 Forgot password?
                             </a>
                         </div>
@@ -40,7 +40,7 @@ ob_start();
 
                     <p class="text-center mb-0">
                         Don't have an account?
-                        <a href="/public/index.php?page=register" class="text-decoration-none">
+                        <a href="/index.php?page=register" class="text-decoration-none">
                             Register here
                         </a>
                     </p>

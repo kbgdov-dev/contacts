@@ -63,7 +63,7 @@ class CampaignController
 
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=campaign-create');
+                redirect('/index.php?page=campaign-create');
             }
 
             $data = [
@@ -90,7 +90,7 @@ class CampaignController
 
                 logActivity('campaign_created', 'campaign', $campaignId, 'Created campaign: ' . $data['name']);
                 setFlashMessage('success', 'Campaign created successfully. Now add recipients.');
-                redirect('/public/index.php?page=campaign-edit&id=' . $campaignId);
+                redirect('/index.php?page=campaign-edit&id=' . $campaignId);
             } else {
                 setFlashMessage('error', 'Failed to create campaign.');
                 require_once SRC_PATH . '/views/campaigns/create.php';
@@ -115,14 +115,14 @@ class CampaignController
 
         if (!$id) {
             setFlashMessage('error', 'Invalid campaign ID.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         $campaign = $this->campaignModel->findById($id, $userId);
 
         if (!$campaign) {
             setFlashMessage('error', 'Campaign not found.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -130,13 +130,13 @@ class CampaignController
 
             if ($action === 'add_recipients') {
                 $this->addRecipients($id);
-                redirect('/public/index.php?page=campaign-edit&id=' . $id);
+                redirect('/index.php?page=campaign-edit&id=' . $id);
             } else {
                 $csrfToken = $_POST['csrf_token'] ?? '';
 
                 if (!verifyCsrfToken($csrfToken)) {
                     setFlashMessage('error', 'Invalid request. Please try again.');
-                    redirect('/public/index.php?page=campaign-edit&id=' . $id);
+                    redirect('/index.php?page=campaign-edit&id=' . $id);
                 }
 
                 $data = [
@@ -161,7 +161,7 @@ class CampaignController
                 if ($this->campaignModel->update($id, $data, $userId)) {
                     logActivity('campaign_updated', 'campaign', $id, 'Updated campaign: ' . $data['name']);
                     setFlashMessage('success', 'Campaign updated successfully.');
-                    redirect('/public/index.php?page=campaign-edit&id=' . $id);
+                    redirect('/index.php?page=campaign-edit&id=' . $id);
                 } else {
                     setFlashMessage('error', 'Failed to update campaign.');
                     require_once SRC_PATH . '/views/campaigns/edit.php';
@@ -189,14 +189,14 @@ class CampaignController
 
         if (!$id) {
             setFlashMessage('error', 'Invalid campaign ID.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         $campaign = $this->campaignModel->findById($id, $userId);
 
         if (!$campaign) {
             setFlashMessage('error', 'Campaign not found.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         $recipients = $this->campaignModel->getRecipients($id);
@@ -215,21 +215,21 @@ class CampaignController
 
         if (!$id) {
             setFlashMessage('error', 'Invalid campaign ID.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         $campaign = $this->campaignModel->findById($id, $userId);
 
         if (!$campaign) {
             setFlashMessage('error', 'Campaign not found.');
-            redirect('/public/index.php?page=campaigns');
+            redirect('/index.php?page=campaigns');
         }
 
         $recipients = $this->campaignModel->getRecipients($id);
 
         if (empty($recipients)) {
             setFlashMessage('error', 'No recipients found. Please add recipients first.');
-            redirect('/public/index.php?page=campaign-edit&id=' . $id);
+            redirect('/index.php?page=campaign-edit&id=' . $id);
         }
 
         // Подготовить получателей для очереди
@@ -244,7 +244,7 @@ class CampaignController
 
         if (empty($recipientsData)) {
             setFlashMessage('error', 'No active recipients found.');
-            redirect('/public/index.php?page=campaign-edit&id=' . $id);
+            redirect('/index.php?page=campaign-edit&id=' . $id);
         }
 
         try {
@@ -263,12 +263,12 @@ class CampaignController
 
             logActivity('campaign_sent', 'campaign', $id, 'Queued campaign: ' . $campaign['name']);
             setFlashMessage('success', "Campaign queued successfully. {$added} emails added to queue.");
-            redirect('/public/index.php?page=campaign-view&id=' . $id);
+            redirect('/index.php?page=campaign-view&id=' . $id);
 
         } catch (Exception $e) {
             error_log("Failed to queue campaign: " . $e->getMessage());
             setFlashMessage('error', 'Failed to queue campaign for sending.');
-            redirect('/public/index.php?page=campaign-edit&id=' . $id);
+            redirect('/index.php?page=campaign-edit&id=' . $id);
         }
     }
 

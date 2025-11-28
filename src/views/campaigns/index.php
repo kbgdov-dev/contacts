@@ -10,14 +10,14 @@ ob_start();
                 <h1 class="h3 mb-0">
                     <i class="bi bi-envelope-fill"></i> Campaigns
                 </h1>
-                <a href="/public/index.php?page=campaign-create" class="btn btn-primary">
+                <a href="/index.php?page=campaign-create" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> New Campaign
                 </a>
             </div>
 
             <?php if (empty($campaigns)): ?>
                 <div class="alert alert-info">
-                    No campaigns yet. <a href="/public/index.php?page=campaign-create">Create your first campaign</a>
+                    No campaigns yet. <a href="/index.php?page=campaign-create">Create your first campaign</a>
                 </div>
             <?php else: ?>
                 <div class="card">
@@ -51,12 +51,12 @@ ob_start();
                                             <td><?= number_format($campaign['opened_count']) ?></td>
                                             <td><?= formatDate($campaign['created_at'], 'd.m.Y') ?></td>
                                             <td class="table-actions">
-                                                <a href="/public/index.php?page=campaign-view&id=<?= $campaign['id'] ?>"
+                                                <a href="/index.php?page=campaign-view&id=<?= $campaign['id'] ?>"
                                                    class="btn btn-sm btn-outline-info" title="View">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <?php if ($campaign['status'] === 'draft'): ?>
-                                                    <a href="/public/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>"
+                                                    <a href="/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>"
                                                        class="btn btn-sm btn-outline-primary" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>

@@ -70,7 +70,7 @@ class ContactController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=contact-create');
+                redirect('/index.php?page=contact-create');
             }
 
             // Sanitize input
@@ -107,7 +107,7 @@ class ContactController
             if ($this->contactModel->create($data, $userId)) {
                 logActivity('contact_created', 'contact', null, 'Created contact: ' . $data['email']);
                 setFlashMessage('success', 'Contact created successfully.');
-                redirect('/public/index.php?page=contacts');
+                redirect('/index.php?page=contacts');
             } else {
                 setFlashMessage('error', 'Failed to create contact.');
                 require_once SRC_PATH . '/views/contacts/create.php';
@@ -128,14 +128,14 @@ class ContactController
 
         if (!$id) {
             setFlashMessage('error', 'Invalid contact ID.');
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         }
 
         $contact = $this->contactModel->findById($id, $userId);
 
         if (!$contact) {
             setFlashMessage('error', 'Contact not found.');
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -144,7 +144,7 @@ class ContactController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=contact-edit&id=' . $id);
+                redirect('/index.php?page=contact-edit&id=' . $id);
             }
 
             // Sanitize input
@@ -181,7 +181,7 @@ class ContactController
             if ($this->contactModel->update($id, $data, $userId)) {
                 logActivity('contact_updated', 'contact', $id, 'Updated contact: ' . $data['email']);
                 setFlashMessage('success', 'Contact updated successfully.');
-                redirect('/public/index.php?page=contacts');
+                redirect('/index.php?page=contacts');
             } else {
                 setFlashMessage('error', 'Failed to update contact.');
                 require_once SRC_PATH . '/views/contacts/edit.php';
@@ -202,14 +202,14 @@ class ContactController
 
         if (!$id) {
             setFlashMessage('error', 'Invalid contact ID.');
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         }
 
         $contact = $this->contactModel->findById($id, $userId);
 
         if (!$contact) {
             setFlashMessage('error', 'Contact not found.');
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -218,7 +218,7 @@ class ContactController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=contacts');
+                redirect('/index.php?page=contacts');
             }
 
             if ($this->contactModel->delete($id, $userId)) {
@@ -229,7 +229,7 @@ class ContactController
             }
         }
 
-        redirect('/public/index.php?page=contacts');
+        redirect('/index.php?page=contacts');
     }
 
     /**
@@ -244,7 +244,7 @@ class ContactController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=contact-import');
+                redirect('/index.php?page=contact-import');
             }
 
             // Check if file was uploaded
@@ -324,7 +324,7 @@ class ContactController
             logActivity('contacts_imported', 'contact', null, "Imported $imported contacts");
 
             setFlashMessage('success', "Import complete. Imported: $imported, Skipped: $skipped, Errors: $errors");
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         } else {
             // Show import form
             require_once SRC_PATH . '/views/contacts/import.php';
@@ -355,7 +355,7 @@ class ContactController
 
         if (empty($contacts)) {
             setFlashMessage('error', 'No contacts to export.');
-            redirect('/public/index.php?page=contacts');
+            redirect('/index.php?page=contacts');
         }
 
         // Export as CSV

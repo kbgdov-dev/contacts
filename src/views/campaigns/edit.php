@@ -13,7 +13,7 @@ ob_start();
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/public/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>" class="needs-validation" novalidate>
+                    <form method="POST" action="/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>" class="needs-validation" novalidate>
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                         <input type="hidden" name="action" value="update">
 
@@ -49,7 +49,7 @@ ob_start();
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="/public/index.php?page=campaigns" class="btn btn-secondary">
+                            <a href="/index.php?page=campaigns" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Back
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -96,7 +96,7 @@ ob_start();
                         <h6 class="mb-0">Add Recipients</h6>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="/public/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>">
+                        <form method="POST" action="/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>">
                             <input type="hidden" name="action" value="add_recipients">
 
                             <div class="mb-3">
@@ -137,7 +137,7 @@ ob_start();
                         </div>
                         <div class="card-body">
                             <p class="mb-3">Campaign is ready to send to <?= count($recipients) ?> recipients.</p>
-                            <form method="POST" action="/public/index.php?page=campaign-send" onsubmit="return confirm('Are you sure you want to send this campaign?')">
+                            <form method="POST" action="/index.php?page=campaign-send" onsubmit="return confirm('Are you sure you want to send this campaign?')">
                                 <input type="hidden" name="campaign_id" value="<?= $campaign['id'] ?>">
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-send"></i> Send Campaign Now

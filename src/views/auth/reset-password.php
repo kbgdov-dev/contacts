@@ -13,7 +13,7 @@ ob_start();
                         <i class="bi bi-shield-lock"></i> Reset Password
                     </h2>
 
-                    <form method="POST" action="/public/index.php?page=reset-password&token=<?= htmlspecialchars($token) ?>">
+                    <form method="POST" action="/index.php?page=reset-password&token=<?= htmlspecialchars($token) ?>">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="mb-3">
@@ -35,7 +35,7 @@ ob_start();
                     <hr class="my-4">
 
                     <p class="text-center mb-0">
-                        <a href="/public/index.php?page=login" class="text-decoration-none">
+                        <a href="/index.php?page=login" class="text-decoration-none">
                             <i class="bi bi-arrow-left"></i> Back to Login
                         </a>
                     </p>

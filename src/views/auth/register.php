@@ -12,7 +12,7 @@ ob_start();
                         <i class="bi bi-person-plus"></i> Register
                     </h2>
 
-                    <form method="POST" action="/public/index.php?page=register">
+                    <form method="POST" action="/index.php?page=register">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="row">
@@ -55,7 +55,7 @@ ob_start();
 
                     <p class="text-center mb-0">
                         Already have an account?
-                        <a href="/public/index.php?page=login" class="text-decoration-none">
+                        <a href="/index.php?page=login" class="text-decoration-none">
                             Login here
                         </a>
                     </p>

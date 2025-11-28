@@ -46,7 +46,7 @@ class TrackingService
         }
 
         $baseUrl = $this->config['tracking']['base_url'];
-        $pixelUrl = $baseUrl . '/public/track.php?t=' . $trackingToken;
+        $pixelUrl = $baseUrl . '/track.php?t=' . $trackingToken;
 
         // Добавить pixel перед закрывающим тегом </body>
         $pixel = '<img src="' . $pixelUrl . '" width="1" height="1" border="0" alt="" style="display:none;" />';
@@ -92,7 +92,7 @@ class TrackingService
             $this->saveLinkTracking($emailLogId, $originalUrl, $trackingToken);
 
             // Создать tracking URL
-            $trackingUrl = $baseUrl . '/public/click.php?t=' . $trackingToken;
+            $trackingUrl = $baseUrl . '/click.php?t=' . $trackingToken;
 
             // Заменить в HTML
             $htmlBody = str_replace('href="' . $originalUrl . '"', 'href="' . $trackingUrl . '"', $htmlBody);
