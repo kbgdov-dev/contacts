@@ -64,7 +64,34 @@ define('CSRF_TOKEN_NAME', 'csrf_token');
 define('SESSION_LIFETIME', (int)(getenv('SESSION_LIFETIME') ?: 7200)); // 2 hours
 
 // Pagination
-define('DEFAULT_ITEMS_PER_PAGE', 20);
+define('DEFAULT_ITEMS_PER_PAGE', (int)(getenv('DEFAULT_ITEMS_PER_PAGE') ?: 20));
+define('MAX_ITEMS_PER_PAGE', (int)(getenv('MAX_ITEMS_PER_PAGE') ?: 100));
+
+// Mail configuration
+define('MAIL_DRIVER', getenv('MAIL_DRIVER') ?: 'smtp');
+define('SMTP_HOST', getenv('SMTP_HOST') ?: 'localhost');
+define('SMTP_PORT', (int)(getenv('SMTP_PORT') ?: 587));
+define('SMTP_ENCRYPTION', getenv('SMTP_ENCRYPTION') ?: 'tls');
+define('SMTP_USERNAME', getenv('SMTP_USERNAME') ?: '');
+define('SMTP_PASSWORD', getenv('SMTP_PASSWORD') ?: '');
+define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'noreply@example.com');
+define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'Contact System');
+
+// Queue settings
+define('QUEUE_ENABLED', (getenv('QUEUE_ENABLED') ?: 'true') === 'true');
+define('QUEUE_BATCH_SIZE', (int)(getenv('QUEUE_BATCH_SIZE') ?: 50));
+define('QUEUE_DELAY_BATCHES', (int)(getenv('QUEUE_DELAY_BATCHES') ?: 60));
+define('QUEUE_DELAY_EMAILS', (int)(getenv('QUEUE_DELAY_EMAILS') ?: 2));
+
+// Tracking settings
+define('TRACKING_ENABLED', (getenv('TRACKING_ENABLED') ?: 'true') === 'true');
+define('TRACKING_PIXEL_ENABLED', (getenv('TRACKING_PIXEL_ENABLED') ?: 'true') === 'true');
+define('TRACKING_LINK_ENABLED', (getenv('TRACKING_LINK_ENABLED') ?: 'true') === 'true');
+
+// Logging
+define('LOG_LEVEL', getenv('LOG_LEVEL') ?: 'info');
+define('LOG_PATH', LOGS_PATH);
+define('MAX_ATTACHMENT_SIZE', (int)(getenv('MAX_ATTACHMENT_SIZE') ?: 10485760)); // 10MB
 
 // Create required directories if they don't exist
 $requiredDirs = [LOGS_PATH, UPLOAD_PATH];
@@ -97,3 +124,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Timezone
 date_default_timezone_set('UTC');
+
+// Composer autoload
+require_once BASE_PATH . '/vendor/autoload.php';
