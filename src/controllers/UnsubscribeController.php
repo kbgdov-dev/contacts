@@ -16,7 +16,7 @@ class UnsubscribeController
 
     /**
      * Unsubscribe from emails
-     * URL: /public/index.php?page=unsubscribe&token=xxxxx
+     * URL: /index.php?page=unsubscribe&token=xxxxx
      */
     public function unsubscribe()
     {

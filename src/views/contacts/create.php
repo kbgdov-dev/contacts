@@ -13,7 +13,7 @@ ob_start();
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/public/index.php?page=contact-create" class="needs-validation" novalidate>
+                    <form method="POST" action="/index.php?page=contact-create" class="needs-validation" novalidate>
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="row">
@@ -88,7 +88,7 @@ ob_start();
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="/public/index.php?page=contacts" class="btn btn-secondary">
+                            <a href="/index.php?page=contacts" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">

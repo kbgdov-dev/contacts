@@ -16,7 +16,7 @@ ob_start();
                         Enter your email address and we'll send you instructions to reset your password.
                     </p>
 
-                    <form method="POST" action="/public/index.php?page=forgot-password">
+                    <form method="POST" action="/index.php?page=forgot-password">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="mb-4">
@@ -32,7 +32,7 @@ ob_start();
                     <hr class="my-4">
 
                     <p class="text-center mb-0">
-                        <a href="/public/index.php?page=login" class="text-decoration-none">
+                        <a href="/index.php?page=login" class="text-decoration-none">
                             <i class="bi bi-arrow-left"></i> Back to Login
                         </a>
                     </p>

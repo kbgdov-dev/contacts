@@ -69,7 +69,7 @@ ob_start();
             <!-- Filters and Actions -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="GET" action="/public/index.php" class="row g-3">
+                    <form method="GET" action="/index.php" class="row g-3">
                         <input type="hidden" name="page" value="contacts">
 
                         <div class="col-md-3">
@@ -98,10 +98,10 @@ ob_start();
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search"></i> Filter
                             </button>
-                            <a href="/public/index.php?page=contacts" class="btn btn-secondary">
+                            <a href="/index.php?page=contacts" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Reset
                             </a>
-                            <a href="/public/index.php?page=contact-create" class="btn btn-success">
+                            <a href="/index.php?page=contact-create" class="btn btn-success">
                                 <i class="bi bi-plus-circle"></i> New Contact
                             </a>
                             <div class="btn-group">
@@ -112,7 +112,7 @@ ob_start();
                                     <li><a class="dropdown-item" href="#" onclick="exportContacts('csv')">Export to CSV</a></li>
                                 </ul>
                             </div>
-                            <a href="/public/index.php?page=contact-import" class="btn btn-outline-success">
+                            <a href="/index.php?page=contact-import" class="btn btn-outline-success">
                                 <i class="bi bi-upload"></i> Import
                             </a>
                         </div>
@@ -125,7 +125,7 @@ ob_start();
                 <div class="card-body">
                     <?php if (empty($contacts)): ?>
                         <div class="alert alert-info">
-                            No contacts found. <a href="/public/index.php?page=contact-create">Create your first contact</a>
+                            No contacts found. <a href="/index.php?page=contact-create">Create your first contact</a>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
@@ -170,11 +170,11 @@ ob_start();
                                             </td>
                                             <td><?= formatDate($contact['created_at'], 'd.m.Y') ?></td>
                                             <td class="table-actions">
-                                                <a href="/public/index.php?page=contact-edit&id=<?= $contact['id'] ?>"
+                                                <a href="/index.php?page=contact-edit&id=<?= $contact['id'] ?>"
                                                    class="btn btn-sm btn-outline-primary" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                <form method="POST" action="/public/index.php?page=contact-delete&id=<?= $contact['id'] ?>"
+                                                <form method="POST" action="/index.php?page=contact-delete&id=<?= $contact['id'] ?>"
                                                       class="d-inline" onsubmit="return confirmDelete('Are you sure you want to delete this contact?')">
                                                     <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">

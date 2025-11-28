@@ -129,11 +129,11 @@ ob_start();
                             <h6 class="mb-0">
                                 <i class="bi bi-person-lines-fill"></i> Recent Contacts
                             </h6>
-                            <a href="/public/index.php?page=contacts" class="btn btn-sm btn-outline-primary">View All</a>
+                            <a href="/index.php?page=contacts" class="btn btn-sm btn-outline-primary">View All</a>
                         </div>
                         <div class="card-body">
                             <?php if (empty($recentContacts)): ?>
-                                <p class="text-muted">No contacts yet. <a href="/public/index.php?page=contact-create">Create your first contact</a></p>
+                                <p class="text-muted">No contacts yet. <a href="/index.php?page=contact-create">Create your first contact</a></p>
                             <?php else: ?>
                                 <div class="list-group list-group-flush">
                                     <?php foreach ($recentContacts as $contact): ?>
@@ -160,11 +160,11 @@ ob_start();
                             <h6 class="mb-0">
                                 <i class="bi bi-envelope-fill"></i> Recent Campaigns
                             </h6>
-                            <a href="/public/index.php?page=campaigns" class="btn btn-sm btn-outline-primary">View All</a>
+                            <a href="/index.php?page=campaigns" class="btn btn-sm btn-outline-primary">View All</a>
                         </div>
                         <div class="card-body">
                             <?php if (empty($recentCampaigns)): ?>
-                                <p class="text-muted">No campaigns yet. <a href="/public/index.php?page=campaign-create">Create your first campaign</a></p>
+                                <p class="text-muted">No campaigns yet. <a href="/index.php?page=campaign-create">Create your first campaign</a></p>
                             <?php else: ?>
                                 <div class="list-group list-group-flush">
                                     <?php foreach ($recentCampaigns as $campaign): ?>
@@ -197,22 +197,22 @@ ob_start();
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <a href="/public/index.php?page=contact-create" class="btn btn-outline-primary w-100 mb-2">
+                                    <a href="/index.php?page=contact-create" class="btn btn-outline-primary w-100 mb-2">
                                         <i class="bi bi-person-plus"></i> New Contact
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="/public/index.php?page=contact-import" class="btn btn-outline-success w-100 mb-2">
+                                    <a href="/index.php?page=contact-import" class="btn btn-outline-success w-100 mb-2">
                                         <i class="bi bi-upload"></i> Import Contacts
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="/public/index.php?page=campaign-create" class="btn btn-outline-info w-100 mb-2">
+                                    <a href="/index.php?page=campaign-create" class="btn btn-outline-info w-100 mb-2">
                                         <i class="bi bi-envelope-plus"></i> New Campaign
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="/public/index.php?page=contacts" class="btn btn-outline-secondary w-100 mb-2">
+                                    <a href="/index.php?page=contacts" class="btn btn-outline-secondary w-100 mb-2">
                                         <i class="bi bi-list-ul"></i> View All Contacts
                                     </a>
                                 </div>

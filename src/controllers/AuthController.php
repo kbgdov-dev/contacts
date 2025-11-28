@@ -27,7 +27,7 @@ class AuthController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=login');
+                redirect('/index.php?page=login');
             }
 
             // Validate inputs
@@ -71,7 +71,7 @@ class AuthController
 
             // Redirect to dashboard
             setFlashMessage('success', 'Welcome back, ' . $user['first_name'] . '!');
-            redirect('/public/index.php?page=dashboard');
+            redirect('/index.php?page=dashboard');
         }
 
         // Show login form
@@ -94,7 +94,7 @@ class AuthController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=register');
+                redirect('/index.php?page=register');
             }
 
             // Validate inputs
@@ -138,7 +138,7 @@ class AuthController
             if ($this->userModel->create($email, $password, $firstName, $lastName)) {
                 logActivity('user_register', 'user', null, "New user registered: $email");
                 setFlashMessage('success', 'Registration successful! Please login.');
-                redirect('/public/index.php?page=login');
+                redirect('/index.php?page=login');
             } else {
                 setFlashMessage('error', 'Registration failed. Please try again.');
                 require_once SRC_PATH . '/views/auth/register.php';
@@ -161,7 +161,7 @@ class AuthController
         session_destroy();
 
         setFlashMessage('success', 'You have been logged out successfully.');
-        redirect('/public/index.php?page=login');
+        redirect('/index.php?page=login');
     }
 
     /**
@@ -176,7 +176,7 @@ class AuthController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=forgot-password');
+                redirect('/index.php?page=forgot-password');
             }
 
             // Validate email
@@ -198,7 +198,7 @@ class AuthController
                 $this->userModel->setResetToken($email, $token, $expires);
 
                 // Send email (TODO: implement email sending)
-                $resetLink = APP_URL . "/public/index.php?page=reset-password&token=" . $token;
+                $resetLink = APP_URL . "/index.php?page=reset-password&token=" . $token;
 
                 // For now, just show the link (in production, send via email)
                 setFlashMessage('success', 'Password reset instructions have been sent to your email. Reset link: ' . $resetLink);
@@ -209,7 +209,7 @@ class AuthController
                 setFlashMessage('success', 'If the email exists, password reset instructions have been sent.');
             }
 
-            redirect('/public/index.php?page=login');
+            redirect('/index.php?page=login');
         }
 
         // Show forgot password form
@@ -225,7 +225,7 @@ class AuthController
 
         if (empty($token)) {
             setFlashMessage('error', 'Invalid reset token.');
-            redirect('/public/index.php?page=login');
+            redirect('/index.php?page=login');
         }
 
         // Verify token
@@ -233,7 +233,7 @@ class AuthController
 
         if (!$user) {
             setFlashMessage('error', 'Invalid or expired reset token.');
-            redirect('/public/index.php?page=login');
+            redirect('/index.php?page=login');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -244,7 +244,7 @@ class AuthController
             // Validate CSRF token
             if (!verifyCsrfToken($csrfToken)) {
                 setFlashMessage('error', 'Invalid request. Please try again.');
-                redirect('/public/index.php?page=reset-password&token=' . $token);
+                redirect('/index.php?page=reset-password&token=' . $token);
             }
 
             // Validate password
@@ -267,7 +267,7 @@ class AuthController
                 logActivity('password_reset_completed', 'user', $user['id'], 'Password reset completed');
 
                 setFlashMessage('success', 'Password has been reset successfully. Please login.');
-                redirect('/public/index.php?page=login');
+                redirect('/index.php?page=login');
             } else {
                 setFlashMessage('error', 'Failed to reset password. Please try again.');
                 require_once SRC_PATH . '/views/auth/reset-password.php';

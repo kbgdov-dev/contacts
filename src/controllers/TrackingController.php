@@ -17,7 +17,7 @@ class TrackingController
 
     /**
      * Track email open
-     * URL: /public/index.php?page=track-open&token=xxxxx
+     * URL: /index.php?page=track-open&token=xxxxx
      */
     public function trackOpen()
     {
@@ -40,7 +40,7 @@ class TrackingController
 
     /**
      * Track link click
-     * URL: /public/index.php?page=track-click&token=xxxxx&url=encoded_url
+     * URL: /index.php?page=track-click&token=xxxxx&url=encoded_url
      */
     public function trackClick()
     {

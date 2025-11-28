@@ -104,6 +104,8 @@ mysql -u root -p contact_system < database/schema.sql
 
 ### 4. Конфигурация
 
+Файл `config/config.php` уже создан и готов к использованию. Он автоматически загружает переменные окружения из `.env` файла.
+
 Скопируйте `.env.example` в `.env` и отредактируйте:
 
 ```bash
@@ -121,7 +123,9 @@ DB_USER=root
 DB_PASSWORD=your_password
 
 # Приложение
-APP_URL=http://localhost
+APP_URL=https://yourdomain.com
+APP_NAME="Contact Management System"
+APP_ENV=production
 
 # SMTP настройки
 MAIL_DRIVER=smtp
@@ -132,6 +136,9 @@ SMTP_USERNAME=your-email@yourdomain.ru
 SMTP_PASSWORD=your-app-password
 SMTP_FROM_EMAIL=noreply@yourdomain.ru
 SMTP_FROM_NAME="Your Company Name"
+
+# Безопасность
+SESSION_LIFETIME=7200
 ```
 
 #### Настройка SMTP для разных провайдеров:
@@ -170,6 +177,8 @@ SMTP_PASSWORD=your-sendgrid-api-key
 
 ### 5. Настройка веб-сервера
 
+**ВАЖНО:** Document Root веб-сервера должен указывать на папку `public/`, а НЕ на корень проекта!
+
 #### Apache
 
 Убедитесь, что mod_rewrite включен:
@@ -179,40 +188,129 @@ sudo a2enmod rewrite
 sudo systemctl restart apache2
 ```
 
-Document Root должен указывать на папку `public/`:
+Конфигурация VirtualHost:
 
 ```apache
 <VirtualHost *:80>
     ServerName contact-system.local
-    DocumentRoot /path/to/contacts/public
+    DocumentRoot /var/www/contacts/public
 
-    <Directory /path/to/contacts/public>
+    <Directory /var/www/contacts/public>
         AllowOverride All
         Require all granted
+        Options -Indexes +FollowSymLinks
     </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/contacts-error.log
+    CustomLog ${APACHE_LOG_DIR}/contacts-access.log combined
 </VirtualHost>
 ```
 
 #### Nginx
 
+Базовая конфигурация:
+
 ```nginx
 server {
     listen 80;
     server_name contact-system.local;
-    root /path/to/contacts/public;
+    root /var/www/contacts/public;
     index index.php;
 
+    # Логирование
+    access_log /var/log/nginx/contacts-access.log;
+    error_log /var/log/nginx/contacts-error.log;
+
+    # Обработка PHP файлов
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
+
+    # Защита от доступа к скрытым файлам
+    location ~ /\. {
+        deny all;
+    }
 }
+```
+
+#### Nginx + Cloudflare (рекомендуемая конфигурация для продакшена)
+
+Если вы используете Cloudflare, настройте Nginx следующим образом для получения реальных IP адресов:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+    root /var/www/contacts/public;
+    index index.php;
+
+    # Логирование
+    access_log /var/log/nginx/contacts-access.log;
+    error_log /var/log/nginx/contacts-error.log;
+
+    # Получение реального IP от Cloudflare
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 103.22.200.0/22;
+    set_real_ip_from 103.31.4.0/22;
+    set_real_ip_from 104.16.0.0/13;
+    set_real_ip_from 104.24.0.0/14;
+    set_real_ip_from 108.162.192.0/18;
+    set_real_ip_from 131.0.72.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    set_real_ip_from 162.158.0.0/15;
+    set_real_ip_from 172.64.0.0/13;
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 188.114.96.0/20;
+    set_real_ip_from 190.93.240.0/20;
+    set_real_ip_from 197.234.240.0/22;
+    set_real_ip_from 198.41.128.0/17;
+    set_real_ip_from 2400:cb00::/32;
+    set_real_ip_from 2606:4700::/32;
+    set_real_ip_from 2803:f800::/32;
+    set_real_ip_from 2405:b500::/32;
+    set_real_ip_from 2405:8100::/32;
+    set_real_ip_from 2c0f:f248::/32;
+    set_real_ip_from 2a06:98c0::/29;
+    real_ip_header CF-Connecting-IP;
+
+    # Обработка PHP файлов
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTP_X_FORWARDED_FOR $http_cf_connecting_ip;
+        fastcgi_param REMOTE_ADDR $http_cf_connecting_ip;
+    }
+
+    # Защита от доступа к скрытым файлам
+    location ~ /\. {
+        deny all;
+    }
+
+    # Кэширование статических файлов
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+**Примечание:** После настройки Nginx не забудьте:
+```bash
+sudo nginx -t  # Проверить конфигурацию
+sudo systemctl reload nginx  # Перезагрузить Nginx
 ```
 
 ### 6. Настройка Cron Job
@@ -275,7 +373,23 @@ sudo systemctl status email-queue.timer
 mysql -u root -p contacts_db < database/migrations/001_add_email_queue_and_logs.sql
 ```
 
-### 8. Права доступа
+### 8. Сброс пароля администратора (опционально)
+
+Если вам нужно сбросить пароль администратора после импорта схемы БД:
+
+```bash
+mysql -u root -p contacts_db
+```
+
+Затем выполните:
+
+```sql
+UPDATE users SET password = '$2y$12$ERRXw4KWGqZPnfE1KwqdX..3PwXlhWvmh0iperNu0hccGiTNEz9t2' WHERE email = 'admin@example.com';
+```
+
+Этот хеш соответствует паролю: `admin123`
+
+### 9. Права доступа
 
 Установите правильные права на папки:
 
@@ -344,6 +458,8 @@ Jane,Smith,jane@example.com,+0987654321,Tech Inc,Developer,partner,active
 ```
 /contacts
 ├── config/              # Конфигурационные файлы
+│   ├── config.php       # Основная конфигурация приложения
+│   ├── config.example.php  # Пример конфигурации
 │   └── mail.php         # Настройки SMTP и очереди
 ├── cron/                # Cron jobs
 │   └── process-email-queue.php

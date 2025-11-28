@@ -15,11 +15,11 @@ ob_start();
                         <?= ucfirst($campaign['status']) ?>
                     </span>
                     <?php if ($campaign['status'] === 'draft'): ?>
-                        <a href="/public/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>" class="btn btn-primary">
+                        <a href="/index.php?page=campaign-edit&id=<?= $campaign['id'] ?>" class="btn btn-primary">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
                     <?php endif; ?>
-                    <a href="/public/index.php?page=campaigns" class="btn btn-secondary">
+                    <a href="/index.php?page=campaigns" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Back to Campaigns
                     </a>
                 </div>

@@ -37,7 +37,7 @@ ob_start();
                         </div>
                     </div>
 
-                    <form method="POST" action="/public/index.php?page=contact-import" enctype="multipart/form-data">
+                    <form method="POST" action="/index.php?page=contact-import" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
                         <div class="mb-3">
@@ -47,7 +47,7 @@ ob_start();
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="/public/index.php?page=contacts" class="btn btn-secondary">
+                            <a href="/index.php?page=contacts" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-success">
