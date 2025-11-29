@@ -214,6 +214,8 @@ class QueueService
         $emails = $this->getNextBatch($batchSize);
 
         if (empty($emails)) {
+            // Завершить кампании даже если нет писем для обработки
+            $this->completeCampaigns();
             return $stats;
         }
 
@@ -240,6 +242,9 @@ class QueueService
                 sleep($delayBetweenEmails);
             }
         }
+
+        // Завершить кампании, у которых все письма обработаны
+        $this->completeCampaigns();
 
         return $stats;
     }
@@ -638,5 +643,28 @@ class QueueService
         } catch (\PDOException $e) {
             throw new \Exception("Database connection failed: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Завершить кампании, у которых все письма обработаны
+     *
+     * @return int Количество завершённых кампаний
+     */
+    private function completeCampaigns(): int
+    {
+        $stmt = $this->db->prepare("
+            UPDATE campaigns c
+            SET c.status = 'sent'
+            WHERE c.status = 'sending'
+              AND NOT EXISTS (
+                SELECT 1 FROM email_queue eq
+                WHERE eq.campaign_id = c.id
+                  AND eq.status IN ('pending', 'processing')
+              )
+        ");
+
+        $stmt->execute();
+
+        return $stmt->rowCount();
     }
 }

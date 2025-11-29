@@ -19,6 +19,7 @@ class EmailService
     private $config;
     private $mailer;
     private $db;
+    private $trackingService;
 
     /**
      * Конструктор
@@ -37,8 +38,9 @@ class EmailService
 
         // Инициализировать подключение к БД
         $this->initDatabase();
+        // Инициализировать TrackingService
+        $this->trackingService = new TrackingService();
     }
-
     /**
      * Отправить одно письмо
      *
@@ -62,6 +64,14 @@ class EmailService
             // Валидация email
             if ($this->config['security']['validate_email'] && !$this->isValidEmail($to)) {
                 throw new \Exception("Invalid email address: {$to}");
+            }
+
+            // Предварительно создать tracking token для добавления pixel
+            $trackingToken = null;
+            if ($isHtml && $this->config['tracking']['enabled'] && $this->config['tracking']['pixel_enabled']) {
+                $trackingToken = md5(uniqid($to, true) . time());
+                // Добавить tracking pixel в HTML
+                $body = $this->trackingService->addTrackingPixel($body, $trackingToken);
             }
 
             // Очистить предыдущие данные
@@ -93,8 +103,21 @@ class EmailService
             // Отправить
             $result = $this->mailer->send();
 
-            // Логировать успешную отправку
-            $this->logEmail($to, $subject, true);
+            // Логировать успешную отправку и получить ID
+            $emailLogId = $this->logEmail($to, $subject, true);
+
+            // Создать tracking запись если есть ID и token
+            if ($emailLogId && $trackingToken) {
+                try {
+                    $stmt = $this->db->prepare("
+                        INSERT INTO email_tracking (email_log_id, tracking_token, created_at)
+                        VALUES (?, ?, NOW())
+                    ");
+                    $stmt->execute([$emailLogId, $trackingToken]);
+                } catch (\PDOException $e) {
+                    error_log("Failed to create tracking record: " . $e->getMessage());
+                }
+            }
 
             return $result;
 
@@ -250,9 +273,9 @@ class EmailService
         string $subject,
         bool $success,
         ?string $error = null
-    ): void {
+    ): ?int {
         if (!$this->config['logging']['enabled']) {
-            return;
+            return null;
         }
 
         // Логировать в файл
@@ -289,20 +312,17 @@ class EmailService
                     $success ? 'sent' : 'failed',
                     $error
                 ]);
+                
+                // Вернуть ID записи
+                return (int)$this->db->lastInsertId();
             } catch (\PDOException $e) {
                 // Игнорируем ошибки БД в логировании
                 error_log("Failed to log email to database: " . $e->getMessage());
             }
         }
+        
+        return null;
     }
-
-    /**
-     * Заменить переменные в тексте
-     *
-     * @param string $text Текст с переменными {variable_name}
-     * @param array $variables Массив переменных ['variable_name' => 'value']
-     * @return string Текст с замененными переменными
-     */
     private function replaceVariables(string $text, array $variables): string
     {
         foreach ($variables as $key => $value) {
